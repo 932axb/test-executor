@@ -1,0 +1,108 @@
+version: '2'
+
+services:
+
+  # Angular4 client
+  client:
+    container_name: test_executor-client
+    command: /script/start.sh
+    hostname: client
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    volumes:
+      - ./client/code:/appcode
+    ports:
+      - "8080:8080"
+
+  # Redis
+  redis:
+    image: redis:2.8.19
+    hostname: redis
+
+ # RabbitMQ
+  rabbit:
+    hostname: rabbit
+    image: rabbitmq:3.6.9
+#    image: rabbitmq:latest
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=mypass
+    ports:
+      - "5672:5672"  # we forward this port because it's useful for debugging
+      - "15672:15672"  # here, we can access rabbitmq management plugin
+
+  # Nginx
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: test_executor-nginx
+    hostname: nginx
+    ports:
+      - "80:8080"
+      - "5000:5000"
+    volumes_from:
+      - client
+    links:
+      - client:client
+      - backend:backend
+
+  # Django backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile-dev
+    container_name: test_executor-backend
+    hostname: web
+    env_file: configs/dev/backend.env
+    volumes:
+      - ./backend/django:/code  # mount code into container in a dev version
+    command: python manage.py runserver 0.0.0.0:8000
+#    command: /usr/local/bin/gunicorn utils.wsgi:application -w 2 -b :8008
+#    env_file: configs/env/dev.env
+    links:
+      - postgres
+      - rabbit
+      - redis
+    depends_on:
+      - postgres
+
+  # Celery worker
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile-dev
+    container_name: test_executor-worker
+    hostname: worker
+    command: /run_celery.sh
+    env_file: configs/dev/backend.env
+    volumes:
+      - ./backend/django:/code  # mount code into container in a dev version
+    links:
+      - postgres
+      - rabbit
+      - redis
+    depends_on:
+      - rabbit
+
+  # Postgresql database service
+  postgres:
+#    restart: always
+    build:
+      context: ./postgresql
+      dockerfile: Dockerfile-dev
+    container_name: test-executor-dev-postgres
+    hostname: postgres
+#    image: akimat-ksk-postgres:latest
+    ports:
+      - "5432"
+    env_file: configs/dev/postgres.env
+    command: "postgres"
+    volumes:
+      - /var/srv/docker/test-executor/postgresql:/var/lib/postgresql/data
+      - /var/srv/docker/test-executor/postgresql-backup:/backup
+#    logging:
+#      driver: syslog
+#      options:
+#        tag: "akimat-ksk-postgresql"
