@@ -1,0 +1,85 @@
+<div class="widgets">
+
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+
+            <ba-card title="Add new task" baCardClass="with-scroll">
+
+                <form class="form-horizontal" #taskForm="ngForm" (ngSubmit)="onSubmit()">
+                    <div class="form-group row">
+                        <label for="requester" class="col-sm-2 form-control-label">Requester</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" #name="ngModel"
+                                   name="requester"
+                                   id="requester"
+                                   required
+                                   [(ngModel)]="model.requester">
+
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="requester" class="col-sm-2 form-control-label">Path</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" #name="ngModel"
+                                   name="path"
+                                   id="path"
+                                   required
+                                   [(ngModel)]="model.path">
+
+                            <div>example: success.py or fail.py</div>
+
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="environment" class="col-sm-2 form-control-label">Environment</label>
+                        <select class="form-control col-sm-6" id="environment"
+                                required
+                                name="environment"
+                                [(ngModel)]="model.environment"
+                                #environment="ngModel">
+                            <option *ngFor="let env of environments" [value]="env.id">{{env.name}}</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="interface_" class="col-sm-2 form-control-label">Interface</label>
+                        <select class="form-control col-sm-6" id="interface_"
+                                required
+                                name="interface_"
+                                [(ngModel)]="model.interface_"
+                                #interface_="ngModel">
+                            <option *ngFor="let interface of interfaces" [value]="interface.id">{{interface.name}}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="template" class="col-sm-2 form-control-label">Template</label>
+                        <select class="form-control col-sm-6" id="template"
+                                required
+                                name="template"
+                                [(ngModel)]="model.template"
+                                #template="ngModel">
+                            <option *ngFor="let template of templates" [value]="template.id">{{template.name}}</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="offset-sm-2 col-sm-10">
+                            <button type="submit"
+                                    (click)="newTask()"
+                                    class="btn btn-success" [disabled]="!taskForm.form.valid">
+                                Add task
+                            </button>
+                            <!--<button type="submit" class="btn btn-success" (click)="newTask()">Add task</button>-->
+                        </div>
+                    </div>
+                </form>
+
+            </ba-card>
+
+        </div>
+    </div>
+</div>

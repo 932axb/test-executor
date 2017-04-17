@@ -1,0 +1,35 @@
+<div class="widgets">
+
+    <div class="row">
+        <div class="col-md-3 offset-md-1">
+
+            <ba-card title="Task detail" baCardClass="with-scroll">
+
+                <div *ngIf="task">
+                    <ul>
+                        <li>
+                            task id: {{task.id}}
+                        </li>
+                        <li>requester: {{task.requester}}</li>
+                        <li>status: {{task.status}}</li>
+                        <li>interface: {{task.interface}}</li>
+                        <li>template: {{task.template}}</li>
+                        <li>environment: {{task.environment}}</li>
+                        <li>created at: {{task.created_at}}</li>
+                        <li>finished at: {{task.finished_at}}</li>
+                    </ul>
+
+                </div>
+            </ba-card>
+
+        </div>
+
+        <div class="col-md-7">
+            <ba-card title="Task output" baCardClass="with-scroll">
+                <div *ngIf="task">
+                    {{task.output}}
+                </div>
+            </ba-card>
+        </div>
+    </div>
+</div>

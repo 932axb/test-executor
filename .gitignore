@@ -1,0 +1,11 @@
+
+
+
+.idea
+
+celerybeat.pid
+celerybeat-schedule
+
+__pycache__
+
+node_modules
